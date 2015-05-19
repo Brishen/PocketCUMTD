@@ -1,6 +1,7 @@
 package com.rmathur.cumtd.ui.fragments.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,6 +14,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.rmathur.cumtd.R;
+import com.rmathur.cumtd.ui.services.FloatingService;
 
 import butterknife.ButterKnife;
 
@@ -49,6 +51,7 @@ public class SettingsFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     saveSettings(true);
+                    startFloating();
                 } else {
                     saveSettings(false);
                 }
@@ -91,6 +94,10 @@ public class SettingsFragment extends Fragment {
     public void loadSettings() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity().getApplicationContext());
         floatingEnabled = sharedPreferences.getBoolean("floating", false);
+    }
+
+    public void startFloating() {
+        this.getActivity().startService(new Intent(this.getActivity(), FloatingService.class));
     }
 }
 
