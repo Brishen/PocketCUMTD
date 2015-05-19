@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Pocket CUMTD</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_favorite">Add Favorite</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="bus_label">Bus</string>
+    <string name="mainAPI_URL">http://developer.cumtd.com/api/v2.2/json/</string>
+    <string name="autoAPI_URL">http://www.cumtd.com/autocomplete/Stops/v1.0/json/search?query=</string>
+    <string name="search_hint">Enter a stop name here...</string>
+    <string name="internetError">Error: check your internet connection!</string>
+    <string name="noStopsNearby">No stops found nearby!</string>
+    <string name="noBuses">No buses found!</string>
+    <string name="addedFavorites">Stop added to favorites!</string>
+    <string name="removedFavorites">Stop removed from favorites!</string>
+
+</resources>
