@@ -346,6 +346,7 @@ public class MapFragment extends Fragment implements GoogleApiClient.ConnectionC
                     e.printStackTrace();
                 }
 
+                this.activity = null;
                 departureAsync = null;
                 marker.setSnippet(snippetText);
                 marker.showInfoWindow();

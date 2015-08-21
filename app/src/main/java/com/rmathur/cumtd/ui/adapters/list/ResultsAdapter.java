@@ -62,20 +62,20 @@ public class ResultsAdapter extends BaseAdapter {
         }
         Departure departure = departures.get(position);
         String busName = departure.getBusName();
-        if (busName.equals("120E Teal Orchard Downs"))
-            busName = "120E Teal";
-        else if (busName.equals("100S Yellow First & Greg"))
-            busName = "100S Yellow";
-        else if (busName.equals("1S YellowHOPPER Gerty"))
-            busName = "1S YellowHOPPER";
-        else if (busName.equals("1S YellowHOPPER E-14"))
-            busName = "1S YellowHOPPER";
-        else if (busName.equals("100S Yellow E14"))
-            busName = "100S Yellow";
-        else if (busName.equals("12E Teal Orchard Downs"))
-            busName = "12E Teal";
-        else if (busName.equals("12E Teal PAR"))
-            busName = "12E Teal";
+//        if (busName.equals("120E Teal Orchard Downs"))
+//            busName = "120E Teal";
+//        else if (busName.equals("100S Yellow First & Greg"))
+//            busName = "100S Yellow";
+//        else if (busName.equals("1S YellowHOPPER Gerty"))
+//            busName = "1S YellowHOPPER";
+//        else if (busName.equals("1S YellowHOPPER E-14"))
+//            busName = "1S YellowHOPPER";
+//        else if (busName.equals("100S Yellow E14"))
+//            busName = "100S Yellow";
+//        else if (busName.equals("12E Teal Orchard Downs"))
+//            busName = "12E Teal";
+//        else if (busName.equals("12E Teal PAR"))
+//            busName = "12E Teal";
 
         holder.title.setText(busName);
         String minsLeft = departure.getMinsLeft();
@@ -87,7 +87,7 @@ public class ResultsAdapter extends BaseAdapter {
             minsLeft += " minutes";
         holder.description.setText(minsLeft);
         String long_name = departure.getLongName();
-        long_name = long_name.substring(long_name.indexOf("-") + 2);
+        long_name = long_name.substring(long_name.indexOf("-") + 2).toUpperCase();
         if (long_name.toLowerCase().equals("arkland college"))
             long_name = "PARKLAND COLLEGE";
         holder.time.setText(long_name);

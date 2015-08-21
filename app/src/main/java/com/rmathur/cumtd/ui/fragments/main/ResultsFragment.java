@@ -339,6 +339,7 @@ public class ResultsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 RepeatedSafeToast.show(activity, getString(R.string.noBuses));
             }
 
+            this.activity = null;
             myAsyncTask = null;
         }
     }

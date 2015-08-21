@@ -106,17 +106,17 @@ public class MainActivity extends ActionBarActivity {
         dataSource.open();
         if (dataSource.getAllStops().isEmpty()) {
             // if there are no stops, load search
-            currentDrawerItem = 1;
             this.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_container, SearchFragment.newInstance())
                     .commit();
+            currentDrawerItem = 1;
             setTitle("Search");
         } else {
             // if there are stops, load favorites
-            currentDrawerItem = 0;
             this.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_container, FavoritesFragment.newInstance())
                     .commit();
+            currentDrawerItem = 0;
             setTitle("Favorites");
         }
         dataSource.close();

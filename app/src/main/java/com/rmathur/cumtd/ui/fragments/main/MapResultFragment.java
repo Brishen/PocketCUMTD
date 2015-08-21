@@ -292,6 +292,7 @@ public class MapResultFragment extends Fragment implements GoogleApiClient.Conne
                 pd.dismiss();
             }
 
+            this.activity = null;
             drawRouteTask = null;
         }
     }

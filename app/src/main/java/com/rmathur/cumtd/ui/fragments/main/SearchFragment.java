@@ -267,6 +267,7 @@ public class SearchFragment extends Fragment {
                 e.printStackTrace();
             }
 
+            this.activity = null;
             myAsyncTask = null;
         }
     }

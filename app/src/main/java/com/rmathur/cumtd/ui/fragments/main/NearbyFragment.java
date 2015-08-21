@@ -245,6 +245,8 @@ public class NearbyFragment extends Fragment implements GoogleApiClient.Connecti
             if (pd != null) {
                 pd.dismiss();
             }
+
+            this.a = null;
             myAsyncTask = null;
         }
     }
