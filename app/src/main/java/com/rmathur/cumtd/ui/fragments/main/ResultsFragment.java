@@ -179,7 +179,10 @@ public class ResultsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         if (myAsyncTask != null) {
             myAsyncTask.cancel(true);
         }
-        myTimer.cancel();
+        if (myTimer != null) {
+            myTimer.cancel();
+            myTimer = null;
+        }
         myAsyncTask = null;
         super.onDestroy();
     }
@@ -277,12 +280,27 @@ public class ResultsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                     }
                 } else {
                     Log.e(MainActivity.class.toString(), "Failed to get JSON object");
+                    activity.runOnUiThread(new Runnable() {
+                        public void run() {
+                            RepeatedSafeToast.show(activity, getString(R.string.internetError));
+                        }
+                    });
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        RepeatedSafeToast.show(activity, getString(R.string.internetError));
+                    }
+                });
             }
-            if (builder.toString().equals("") || builder.toString() == null)
-                Toast.makeText(getActivity(), getString(R.string.internetError), Toast.LENGTH_SHORT).show();
+            if (builder.toString().equals("") || builder.toString() == null) {
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        RepeatedSafeToast.show(activity, getString(R.string.internetError));
+                    }
+                });
+            }
             return builder.toString();
         }
 

@@ -23,6 +23,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -106,11 +108,13 @@ public class MapResultFragment extends Fragment implements GoogleApiClient.Conne
                 .build();
         mGoogleApiClient.connect();
 
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.bus_location);
         map.addMarker(new MarkerOptions()
                         .position(new LatLng(busLat, busLon))
                         .title(busName)
                         .snippet(minsLeft)
                         .draggable(false)
+                        .icon(icon)
         );
 
         shapeid = shapeid.replace(" ", "+");
@@ -190,11 +194,8 @@ public class MapResultFragment extends Fragment implements GoogleApiClient.Conne
         double centerLat, centerLon;
         int zoomLevel = 16;
 
-        centerLat = (busLat + latitude) / 2;
-        centerLon = (busLon + longitude) / 2;
-
         // Updates the location and zoom of the MapView
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(centerLat, centerLon), zoomLevel);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(busLat, busLon), zoomLevel);
         map.animateCamera(cameraUpdate);
     }
 
@@ -229,6 +230,9 @@ public class MapResultFragment extends Fragment implements GoogleApiClient.Conne
             String method = "GetShape";
             StringBuilder builder = new StringBuilder();
             HttpClient client = new DefaultHttpClient();
+
+            strings[0] = strings[0].replace(">", "%3E");
+
             HttpGet httpGet = new HttpGet(getString(R.string.mainAPI_URL) + method + "?shape_id=" + strings[0] + "&key=" + getString(R.string.apiKey));
             try {
                 HttpResponse response = client.execute(httpGet);

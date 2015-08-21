@@ -31,6 +31,7 @@ import com.google.gson.JsonParser;
 import com.rmathur.cumtd.R;
 import com.rmathur.cumtd.data.CSVFile;
 import com.rmathur.cumtd.data.model.Stop;
+import com.rmathur.cumtd.ui.RepeatedSafeToast;
 import com.rmathur.cumtd.ui.activities.MainActivity;
 
 import org.apache.http.HttpEntity;
@@ -104,13 +105,17 @@ public class MapFragment extends Fragment implements GoogleApiClient.ConnectionC
             @Override
             public boolean onMarkerClick(Marker arg0) {
                 String stopId = stopDb.get(arg0);
-                departureAsync = new DeparturesFromStop(arg0);
+                departureAsync = new DeparturesFromStop(arg0, getCurrentActivity());
                 departureAsync.execute(stopId);
                 return true;
             }
         });
 
         return view;
+    }
+
+    public Activity getCurrentActivity() {
+        return this.getActivity();
     }
 
     @Override
@@ -120,8 +125,17 @@ public class MapFragment extends Fragment implements GoogleApiClient.ConnectionC
             // Populates parameters with lat/lon information
             latitude = mLastLocation.getLatitude();
             longitude = mLastLocation.getLongitude();
+
+            double unionLatitude = 40.109243;
+            double unionLongitude = -88.227253;
+
             // Updates the location and zoom of the MapView
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16);
+            CameraUpdate cameraUpdate;
+            if (40.047427 < latitude && latitude < 40.151161 && -88.304157 < longitude && longitude < -88.171978) {
+                cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16);
+            } else {
+                cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(unionLatitude, unionLongitude), 16);
+            }
             map.animateCamera(cameraUpdate);
         } else {
             Log.e("Error", "Failed to get location");
@@ -224,9 +238,11 @@ public class MapFragment extends Fragment implements GoogleApiClient.ConnectionC
 
         private Marker marker;
         private String stopId;
+        public Activity activity;
 
-        public DeparturesFromStop(Marker arg0) {
+        public DeparturesFromStop(Marker arg0, Activity a) {
             this.marker = arg0;
+            this.activity = a;
         }
 
         protected void onPreExecute() {
@@ -257,12 +273,26 @@ public class MapFragment extends Fragment implements GoogleApiClient.ConnectionC
                     }
                 } else {
                     Log.e(MainActivity.class.toString(), "Failed to get JSON object");
+                    activity.runOnUiThread(new Runnable() {
+                        public void run() {
+                            RepeatedSafeToast.show(activity, getString(R.string.internetError));
+                        }
+                    });
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        RepeatedSafeToast.show(activity, getString(R.string.internetError));
+                    }
+                });
             }
             if (builder.toString().equals("") || builder.toString() == null)
-                Toast.makeText(getActivity(), getString(R.string.internetError), Toast.LENGTH_SHORT).show();
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        RepeatedSafeToast.show(activity, getString(R.string.internetError));
+                    }
+                });
             return builder.toString();
         }
 
