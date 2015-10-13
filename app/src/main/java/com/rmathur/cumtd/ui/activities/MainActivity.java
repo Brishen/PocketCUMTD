@@ -95,7 +95,7 @@ public class MainActivity extends ActionBarActivity {
         items.add(new DrawerItem(R.drawable.nearby, "Nearby"));
         items.add(new DrawerItem(R.drawable.map, "Map"));
         //items.add(new DrawerItem(R.drawable.planner, "Trip Planner"));
-        //items.add(new DrawerItem(R.drawable.settings, "Settings"));
+        items.add(new DrawerItem(R.drawable.settings, "Settings"));
         items.add(new DrawerItem(R.drawable.about, "About"));
 
         MainDrawerAdapter adapter = new MainDrawerAdapter(this, items);
@@ -123,9 +123,9 @@ public class MainActivity extends ActionBarActivity {
 
         taskDescriptionSet();
         loadSettings();
-//        if (floatingEnabled) {
-//            startFloating();
-//        }
+        if (floatingEnabled) {
+            startFloating();
+        }
     }
 
     public void startFloating() {
@@ -165,8 +165,8 @@ public class MainActivity extends ActionBarActivity {
                 switchToFragment(MapFragment.newInstance());
 //            } else if (item.getLabel().equals("Trip Planner")) {
 //                switchToFragment(TripPlannerFragment.newInstance());
-//            } else if (item.getLabel().equals("Settings")) {
-//                switchToFragment(SettingsFragment.newInstance());
+            } else if (item.getLabel().equals("Settings")) {
+                switchToFragment(SettingsFragment.newInstance());
             } else if (item.getLabel().equals("About")) {
                 switchToFragment(AboutFragment.newInstance());
             }

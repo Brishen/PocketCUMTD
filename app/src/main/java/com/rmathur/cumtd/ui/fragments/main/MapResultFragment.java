@@ -26,6 +26,8 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -60,6 +62,7 @@ public class MapResultFragment extends Fragment implements GoogleApiClient.Conne
     String shapeid;
     String colorRoute;
     drawRoute drawRouteTask = null;
+    Marker marker;
 
     Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
@@ -109,7 +112,7 @@ public class MapResultFragment extends Fragment implements GoogleApiClient.Conne
         mGoogleApiClient.connect();
 
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.bus_location);
-        map.addMarker(new MarkerOptions()
+        marker = map.addMarker(new MarkerOptions()
                         .position(new LatLng(busLat, busLon))
                         .title(busName)
                         .snippet(minsLeft)
@@ -131,7 +134,7 @@ public class MapResultFragment extends Fragment implements GoogleApiClient.Conne
             // Populates parameters with lat/lon information
             latitude = mLastLocation.getLatitude();
             longitude = mLastLocation.getLongitude();
-            zoomMap();
+            zoomMap(latitude, longitude, marker);
         } else {
             Log.e("Error", "Failed to get location");
         }
@@ -190,13 +193,22 @@ public class MapResultFragment extends Fragment implements GoogleApiClient.Conne
         }
     }
 
-    public void zoomMap() {
-        double centerLat, centerLon;
-        int zoomLevel = 16;
+    public void zoomMap(double lat, double lon, Marker mark) {
 
-        // Updates the location and zoom of the MapView
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(busLat, busLon), zoomLevel);
-        map.animateCamera(cameraUpdate);
+        CameraUpdate cu;
+
+        if (40.047427 < latitude && latitude < 40.151161 && -88.304157 < longitude && longitude < -88.171978) {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            builder.include(mark.getPosition());
+            builder.include(new LatLng(lat, lon));
+            LatLngBounds bounds = builder.build();
+            int padding = 100;
+            cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        } else {
+            cu = CameraUpdateFactory.newLatLngZoom(new LatLng(busLat, busLon), 16);
+        }
+
+        map.moveCamera(cu);
     }
 
     public void hideKeyboard() {

@@ -7,22 +7,25 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.rmathur.cumtd.R;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FloatingService extends Service {
 
     private WindowManager windowManager;
-    private List<View> chatHeads;
+    private List<View> bubbles;
     private LayoutInflater inflater;
+    private GestureDetector gestureDetector;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -34,33 +37,20 @@ public class FloatingService extends Service {
         super.onCreate();
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         inflater = LayoutInflater.from(this);
-        chatHeads = new ArrayList<View>();
+        bubbles = new ArrayList<View>();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        final View chatHead = inflater.inflate(R.layout.chat_head, null);
-
-        TextView txt_title = (TextView) chatHead.findViewById(R.id.txt_title);
-        TextView txt_text = (TextView) chatHead.findViewById(R.id.txt_text);
-
-        txt_title.setText(intent.getStringExtra("title"));
-        txt_text.setText(intent.getStringExtra("text"));
-
-        chatHead.findViewById(R.id.btn_dismiss).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                windowManager.removeView(chatHead);
-            }
-        });
+        final View bubble = inflater.inflate(R.layout.bubble, null);
+        gestureDetector = new GestureDetector(this, new SingleTapConfirm());
 
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.TYPE_PHONE, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.TRANSLUCENT);
-
         params.gravity = Gravity.CENTER;
 
-        chatHead.findViewById(R.id.txt_title).setOnTouchListener(new View.OnTouchListener() {
+        bubble.findViewById(R.id.bubble).setOnTouchListener(new View.OnTouchListener() {
             private int initialX;
             private int initialY;
             private float initialTouchX;
@@ -68,52 +58,108 @@ public class FloatingService extends Service {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        initialX = params.x;
-                        initialY = params.y;
-                        initialTouchX = event.getRawX();
-                        initialTouchY = event.getRawY();
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        return true;
-                    case MotionEvent.ACTION_MOVE:
-                        params.x = initialX + (int) (event.getRawX() - initialTouchX);
-                        params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                        windowManager.updateViewLayout(chatHead, params);
-                        return true;
+
+                if (gestureDetector.onTouchEvent(event)) {
+                    Log.e("OMG", "clicked yo");
+                    return true;
+                } else {
+                    Log.e("OMG", "dragged yo");
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            initialX = params.x;
+                            initialY = params.y;
+                            initialTouchX = event.getRawX();
+                            initialTouchY = event.getRawY();
+                            return true;
+                        case MotionEvent.ACTION_UP:
+                            return true;
+                        case MotionEvent.ACTION_MOVE:
+                            params.x = initialX + (int) (event.getRawX() - initialTouchX);
+                            params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                            windowManager.updateViewLayout(bubble, params);
+                            return true;
+                    }
+                    return false;
                 }
-                return false;
             }
         });
 
-        chatHead.findViewById(R.id.txt_text).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // nothing
-            }
-        });
-
-        addChatHead(chatHead, params);
+        addBubble(bubble, params);
 
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void addChatHead(View chatHead, LayoutParams params) {
-        chatHeads.add(chatHead);
-        windowManager.addView(chatHead, params);
+    public void addBubble(View bubble, LayoutParams params) {
+        bubbles.add(bubble);
+        windowManager.addView(bubble, params);
     }
 
-    public void removeChatHead(View chatHead) {
-        chatHeads.remove(chatHead);
-        windowManager.removeView(chatHead);
+    public void removeBubble(View bubble) {
+        bubbles.remove(bubble);
+        windowManager.removeView(bubble);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        for (View chatHead : chatHeads) {
-            removeChatHead(chatHead);
+        for (View bubble : bubbles) {
+            removeBubble(bubble);
+        }
+    }
+
+    private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent event) {
+            return true;
         }
     }
 }
+
+
+//        TextView txt_title = (TextView) chatHead.findViewById(R.id.txt_title);
+//        TextView txt_text = (TextView) chatHead.findViewById(R.id.txt_text);
+//
+//        txt_title.setText(intent.getStringExtra("title"));
+//        txt_text.setText(intent.getStringExtra("text"));
+//
+//        chatHead.findViewById(R.id.btn_dismiss).setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                windowManager.removeView(chatHead);
+//            }
+//        });
+
+//        chatHead.findViewById(R.id.txt_title).setOnTouchListener(new View.OnTouchListener() {
+//            private int initialX;
+//            private int initialY;
+//            private float initialTouchX;
+//            private float initialTouchY;
+//
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                switch (event.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        initialX = params.x;
+//                        initialY = params.y;
+//                        initialTouchX = event.getRawX();
+//                        initialTouchY = event.getRawY();
+//                        return true;
+//                    case MotionEvent.ACTION_UP:
+//                        return true;
+//                    case MotionEvent.ACTION_MOVE:
+//                        params.x = initialX + (int) (event.getRawX() - initialTouchX);
+//                        params.y = initialY + (int) (event.getRawY() - initialTouchY);
+//                        windowManager.updateViewLayout(chatHead, params);
+//                        return true;
+//                }
+//                return false;
+//            }
+//        });
+//
+//        chatHead.findViewById(R.id.txt_text).setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // nothing
+//            }
+//        });

@@ -136,7 +136,7 @@ public class MapFragment extends Fragment implements GoogleApiClient.ConnectionC
             } else {
                 cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(unionLatitude, unionLongitude), 16);
             }
-            map.animateCamera(cameraUpdate);
+            map.moveCamera(cameraUpdate);
         } else {
             Log.e("Error", "Failed to get location");
         }
